@@ -41,15 +41,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ace50bade8e6234aa140d9a2f552bbee1db4d353f69b8217bc503490fc1a9f26"
 
 [[package]]
-name = "bench_macros"
-version = "0.1.0"
-source = "git+https://github.com/midnightntwrk/midnight-zk#54bd684da90b4c7a24cb9a40f447e6c06ee40a7a"
-dependencies = [
- "quote",
- "syn 2.0.98",
-]
-
-[[package]]
 name = "bitflags"
 version = "1.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -467,7 +458,7 @@ checksum = "78ca9ab1a0babb1e7d5695e3530886289c18cf2f87ec19a575a0abdce112e3a3"
 [[package]]
 name = "midnight-curves"
 version = "0.1.1"
-source = "git+https://github.com/midnightntwrk/midnight-zk#54bd684da90b4c7a24cb9a40f447e6c06ee40a7a"
+source = "git+https://github.com/midnightntwrk/midnight-zk?branch=main#802389dfad3a5834a32ceece42e9eb6ddca7a98e"
 dependencies = [
  "bitvec",
  "blst",
@@ -486,9 +477,8 @@ dependencies = [
 [[package]]
 name = "midnight-proofs"
 version = "0.5.1"
-source = "git+https://github.com/midnightntwrk/midnight-zk#54bd684da90b4c7a24cb9a40f447e6c06ee40a7a"
+source = "git+https://github.com/midnightntwrk/midnight-zk?branch=main#802389dfad3a5834a32ceece42e9eb6ddca7a98e"
 dependencies = [
- "bench_macros",
  "blake2b_simd",
  "ff",
  "getrandom",
@@ -804,9 +794,9 @@ dependencies = [
 
 [[package]]
 name = "sha2"
-version = "0.10.8"
+version = "0.10.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "793db75ad2bcafc3ffa7c68b215fee268f537982cd901d132f89c6343f3a3dc8"
+checksum = "a7507d819769d01a365ab707794a4084392c824f54a7a6a7862f8c3d0892b283"
 dependencies = [
  "cfg-if",
  "cpufeatures",
