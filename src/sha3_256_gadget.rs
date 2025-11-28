@@ -179,13 +179,13 @@ where
 }
 
 /// A wrapper gadget that computs a SHA3_256 digest.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Sha3_256<F, KeccakF>
 where
     F: PrimeField,
     KeccakF: Keccackf1600Instructions<F>,
 {
-    chip: KeccakF,
+    pub chip: KeccakF,
     phantom: PhantomData<F>,
 }
 
@@ -213,13 +213,13 @@ where
 }
 
 /// A wrapper gadget that computs a Keccak_256 digest.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Keccak256<F, KeccakF>
 where
     F: PrimeField,
     KeccakF: Keccackf1600Instructions<F>,
 {
-    chip: KeccakF,
+    pub chip: KeccakF,
     phantom: PhantomData<F>,
 }
 

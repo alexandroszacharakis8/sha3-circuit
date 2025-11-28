@@ -5,3 +5,6 @@ pub mod instructions;
 #[cfg(not(doctest))]
 pub mod packed_chip;
 pub mod sha3_256_gadget;
+
+/// Number of bytes in a digest of Keccak.
+pub use constants::KECCAK_SQUEEZE_BYTES;

@@ -135,6 +135,7 @@ fn criterion_benchmark(c: &mut Criterion) {
             params,
             pk,
             &[circuit.clone()],
+            0,
             &[&[]],
             rng,
             &mut transcript,
@@ -152,6 +153,7 @@ fn criterion_benchmark(c: &mut Criterion) {
         let res =
             prepare::<Fr, KZGCommitmentScheme<Bn256>, CircuitTranscript<blake2b_simd::State>>(
                 vk,
+                &[],
                 &[&[]],
                 &mut transcript,
             )

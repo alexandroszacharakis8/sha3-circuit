@@ -161,6 +161,7 @@ fn prover(
         params,
         pk,
         &[circuit.clone()],
+        0,
         &[&[pi.as_slice()]],
         rng,
         &mut transcript,
@@ -179,6 +180,7 @@ fn verifier(
     let mut transcript = CircuitTranscript::init_from_bytes(proof);
     let res = prepare::<Fr, KZGCommitmentScheme<Bn256>, CircuitTranscript<blake2b_simd::State>>(
         vk,
+        &[&[]],
         &[&[pi]],
         &mut transcript,
     )
