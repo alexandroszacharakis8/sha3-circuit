@@ -235,7 +235,8 @@ where
         }
     }
 
-    /// Digests the `hash_input` in circuit and returns the assigned output.
+    /// Digests the `hash_input` in circuit. Takes the input in unassigned form,
+    /// and returns both the assigned input and the assigned output (digest).
     pub fn digest(
         &self,
         layouter: &mut impl Layouter<F>,
