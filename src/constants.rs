@@ -21,7 +21,7 @@ pub(crate) const KECCAK_ABSORB_LANES: usize = 17;
 pub(crate) const KECCAK_ABSORB_BYTES: usize = KECCAK_ABSORB_LANES * KECCAK_BYTES_PER_LANE;
 
 /// The number of squeezed bytes
-pub(crate) const KECCAK_SQUEEZE_BYTES: usize = 32;
+pub const KECCAK_SQUEEZE_BYTES: usize = 32;
 
 /// The Keccak round constants
 pub(crate) const ROUND_CST: [u64; KECCAK_NUM_ROUNDS] = [

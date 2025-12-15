@@ -1,12 +1,10 @@
 use std::marker::PhantomData;
 
+use ff::{Field, PrimeField};
+use midnight_curves::Fq as Fp;
 use midnight_proofs::{
     circuit::{Chip, Layouter, SimpleFloorPlanner, Value},
     dev::MockProver,
-    halo2curves::{
-        ff::{Field, PrimeField},
-        pasta::Fp,
-    },
     plonk::{Circuit, ConstraintSystem, Error},
 };
 use rand::{Rng, SeedableRng};

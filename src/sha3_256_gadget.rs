@@ -1,12 +1,14 @@
 use std::marker::PhantomData;
 
+use ff::PrimeField;
 use midnight_proofs::{
-    circuit::{AssignedCell, Layouter, Value},
-    halo2curves::ff::PrimeField,
+    circuit::{AssignedCell, Chip, Layouter, Value},
     plonk::Error,
 };
 
-use crate::{constants::KECCAK_ABSORB_BYTES, instructions::Keccackf1600Instructions};
+use crate::{
+    constants::KECCAK_ABSORB_BYTES, instructions::Keccackf1600Instructions, packed_chip::PackedChip,
+};
 
 #[derive(Debug, Clone, Copy)]
 /// Enum that represents the two supported hash modes. These are:
@@ -179,7 +181,7 @@ where
 }
 
 /// A wrapper gadget that computs a SHA3_256 digest.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Sha3_256<F, KeccakF>
 where
     F: PrimeField,
@@ -189,11 +191,27 @@ where
     phantom: PhantomData<F>,
 }
 
+impl<F, KeccakF> Chip<F> for Sha3_256<F, KeccakF>
+where
+    F: PrimeField,
+    KeccakF: Keccackf1600Instructions<F>,
+{
+    type Config = <KeccakF as Chip<F>>::Config;
+    type Loaded = <KeccakF as Chip<F>>::Loaded;
+    fn config(&self) -> &Self::Config {
+        self.chip.config()
+    }
+    fn loaded(&self) -> &Self::Loaded {
+        self.chip.loaded()
+    }
+}
+
 impl<F, KeccakF> Sha3_256<F, KeccakF>
 where
     F: PrimeField,
     KeccakF: Keccackf1600Instructions<F>,
 {
+    /// Generates a new chip from the packed chip.
     pub fn new(chip: KeccakF) -> Self {
         Self {
             chip,
@@ -213,7 +231,7 @@ where
 }
 
 /// A wrapper gadget that computs a Keccak_256 digest.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Keccak256<F, KeccakF>
 where
     F: PrimeField,
@@ -223,11 +241,27 @@ where
     phantom: PhantomData<F>,
 }
 
+impl<F, KeccakF> Chip<F> for Keccak256<F, KeccakF>
+where
+    F: PrimeField,
+    KeccakF: Keccackf1600Instructions<F>,
+{
+    type Config = <KeccakF as Chip<F>>::Config;
+    type Loaded = <KeccakF as Chip<F>>::Loaded;
+    fn config(&self) -> &Self::Config {
+        self.chip.config()
+    }
+    fn loaded(&self) -> &Self::Loaded {
+        self.chip.loaded()
+    }
+}
+
 impl<F, KeccakF> Keccak256<F, KeccakF>
 where
     F: PrimeField,
     KeccakF: Keccackf1600Instructions<F>,
 {
+    /// Generates a new chip from the packed chip.
     pub fn new(chip: KeccakF) -> Self {
         Self {
             chip,
@@ -235,7 +269,8 @@ where
         }
     }
 
-    /// Digests the `hash_input` in circuit and returns the assigned output.
+    /// Digests the `hash_input` in circuit. Takes the input in unassigned form,
+    /// and returns both the assigned input and the assigned output (digest).
     pub fn digest(
         &self,
         layouter: &mut impl Layouter<F>,
@@ -243,5 +278,14 @@ where
     ) -> Result<(Vec<KeccakF::AssignedByte>, KeccakF::Digest), Error> {
         let hasher = Sha3Family::new(self.chip.clone(), HashMode::Keccak256);
         hasher.digest(layouter, hash_input)
+    }
+}
+
+// The load function only needs to be defined for either Keccak or Sha, since
+// they share the same tables.
+impl<F: PrimeField> Keccak256<F, PackedChip<F>> {
+    /// Loads the tables of the underlying packed chip.
+    pub fn load_table(&self, layouter: &mut impl Layouter<F>) -> Result<(), Error> {
+        self.chip.load_table(layouter)
     }
 }

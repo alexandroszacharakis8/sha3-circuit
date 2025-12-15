@@ -9,10 +9,10 @@ mod utils;
 
 use std::marker::PhantomData;
 
+use ff::PrimeField;
 use keccakf_operations::KECCAK_ROWS_PER_PERMUTATION;
 use midnight_proofs::{
     circuit::{Chip, Layouter, Value},
-    halo2curves::ff::PrimeField,
     plonk::{Advice, Column, ConstraintSystem, Error, Fixed, Selector, TableColumn},
 };
 use utils::{Bits, DenseBits};
@@ -359,14 +359,11 @@ impl<F: PrimeField> PackedChip<F> {
         let advice_columns =
             (0..PACKED_ADVICE_COLS).map(|_| meta.advice_column()).collect::<Vec<_>>();
         let fixed_columns = (0..PACKED_FIXED_COLS).map(|_| meta.fixed_column()).collect::<Vec<_>>();
-        let table_columns =
-            (0..PACKED_TABLE_COLS).map(|_| meta.lookup_table_column()).collect::<Vec<_>>();
         PackedChip::configure(
             meta,
             constant_column,
             advice_columns.try_into().unwrap(),
             fixed_columns.try_into().unwrap(),
-            table_columns.try_into().unwrap(),
         )
     }
 
@@ -400,9 +397,16 @@ impl<F: PrimeField> PackedChip<F> {
         constant_column: Column<Fixed>,
         advice_columns: [Column<Advice>; PACKED_ADVICE_COLS],
         fixed_columns: [Column<Fixed>; PACKED_FIXED_COLS],
-        table_columns: [TableColumn; PACKED_TABLE_COLS],
     ) -> PackedConfig {
         meta.enable_constant(constant_column);
+
+        // Freshly generating the table columns, as they a priori cannot be shared by
+        // the other chips.
+        let mut table_columns = Vec::new();
+        for _ in 0..PACKED_TABLE_COLS {
+            table_columns.push(meta.lookup_table_column());
+        }
+        let table_columns: [TableColumn; PACKED_TABLE_COLS] = table_columns.try_into().unwrap();
 
         // 1. configure the decomposition subconfig
 
