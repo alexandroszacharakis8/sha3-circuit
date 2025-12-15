@@ -1,11 +1,9 @@
 use std::marker::PhantomData;
 
+use ff::PrimeField;
+use midnight_curves::bls12_381::{Bls12, Fq as Fr};
 use midnight_proofs::{
     circuit::{Layouter, SimpleFloorPlanner, Value},
-    halo2curves::{
-        bn256::{Bn256, Fr},
-        ff::PrimeField,
-    },
     plonk::{
         create_proof, keygen_pk, keygen_vk, prepare, Circuit, Column, ConstraintSystem, Error,
         Instance, ProvingKey, VerifyingKey,
@@ -121,13 +119,13 @@ fn digest_cpu(input: &[u8]) -> Vec<u8> {
 // keygen
 #[allow(clippy::type_complexity)]
 fn keygen() -> (
-    ParamsKZG<Bn256>,
-    ProvingKey<Fr, KZGCommitmentScheme<Bn256>>,
-    VerifyingKey<Fr, KZGCommitmentScheme<Bn256>>,
+    ParamsKZG<Bls12>,
+    ProvingKey<Fr, KZGCommitmentScheme<Bls12>>,
+    VerifyingKey<Fr, KZGCommitmentScheme<Bls12>>,
 ) {
     let mut rng = ChaCha8Rng::from_entropy();
 
-    let params = ParamsKZG::<Bn256>::unsafe_setup(16, &mut rng);
+    let params = ParamsKZG::<Bls12>::unsafe_setup(16, &mut rng);
 
     // we create the keys with an arbitrary witness, here the all zero witness
     let circuit: HashChain10<Fr> = HashChain10 {
@@ -144,8 +142,8 @@ fn keygen() -> (
 // prover
 fn prover(
     circuit: HashChain10<Fr>,
-    params: &ParamsKZG<Bn256>,
-    pk: &ProvingKey<Fr, KZGCommitmentScheme<Bn256>>,
+    params: &ParamsKZG<Bls12>,
+    pk: &ProvingKey<Fr, KZGCommitmentScheme<Bls12>>,
 ) -> Vec<u8> {
     let rng = ChaCha8Rng::from_entropy();
 
@@ -157,7 +155,7 @@ fn prover(
         .collect::<Vec<_>>();
 
     let mut transcript = CircuitTranscript::init();
-    create_proof::<Fr, KZGCommitmentScheme<Bn256>, CircuitTranscript<blake2b_simd::State>, _>(
+    create_proof::<Fr, KZGCommitmentScheme<Bls12>, CircuitTranscript<blake2b_simd::State>, _>(
         params,
         pk,
         &[circuit.clone()],
@@ -172,13 +170,13 @@ fn prover(
 
 // verifier
 fn verifier(
-    params: &ParamsKZG<Bn256>,
+    params: &ParamsKZG<Bls12>,
     pi: &[Fr],
-    vk: &VerifyingKey<Fr, KZGCommitmentScheme<Bn256>>,
+    vk: &VerifyingKey<Fr, KZGCommitmentScheme<Bls12>>,
     proof: &[u8],
 ) {
     let mut transcript = CircuitTranscript::init_from_bytes(proof);
-    let res = prepare::<Fr, KZGCommitmentScheme<Bn256>, CircuitTranscript<blake2b_simd::State>>(
+    let res = prepare::<Fr, KZGCommitmentScheme<Bls12>, CircuitTranscript<blake2b_simd::State>>(
         vk,
         &[&[]],
         &[&[pi]],

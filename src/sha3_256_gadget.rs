@@ -1,8 +1,8 @@
 use std::marker::PhantomData;
 
+use ff::PrimeField;
 use midnight_proofs::{
     circuit::{AssignedCell, Layouter, Value},
-    halo2curves::ff::PrimeField,
     plonk::Error,
 };
 

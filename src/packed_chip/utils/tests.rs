@@ -1,4 +1,5 @@
-use midnight_proofs::halo2curves::{ff::Field, pasta::Fp};
+use ff::Field;
+use midnight_curves::Fq as Fp;
 use rand::{Rng, RngCore, SeedableRng};
 use rand_chacha::ChaCha8Rng;
 

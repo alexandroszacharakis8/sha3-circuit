@@ -11,11 +11,16 @@ keywords = ["halo", "proofs", "zkp", "zkSNARKs", "sha3", "keccak"]
 
 [dependencies]
 # temporary import of midnight-proofs, for the whole project to compile. Will be updated using the syntax commented below (with the correct tag) once the latest tag is out.
-midnight-proofs = { git = "https://github.com/midnightntwrk/midnight-zk", branch = "main", default-features = false, features = [
-  "bits",
+midnight-proofs = { path = "../midnight-zk/proofs", default-features = false, features = [
   "circuit-params",
   "committed-instances",
 ] }
+midnight-curves = { path = "../midnight-zk/curves", default-features = false }
+# midnight-proofs = { git = "https://github.com/midnightntwrk/midnight-zk", branch = "main", default-features = false, features = [
+#   "bits",
+#   "circuit-params",
+#   "committed-instances",
+# ] }
 # midnight-proofs = { git = "https://github.com/midnightntwrk/midnight-zk", tag = "midnight-proofs-v0.5.1", default-features = false, features = [
 #   "bits",
 #   "circuit-params",
@@ -24,6 +29,7 @@ midnight-proofs = { git = "https://github.com/midnightntwrk/midnight-zk", branch
 num-bigint = { version = "0.4" }
 rand = "0.8"
 blake2b_simd = "1.0.3"
+ff = "0.13"
 
 [dev-dependencies]
 criterion = "0.3"

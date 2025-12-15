@@ -9,12 +9,10 @@ use std::{
 };
 
 use criterion::{BenchmarkId, Criterion};
+use ff::PrimeField;
+use midnight_curves::bls12_381::{Bls12, Fq as Fr};
 use midnight_proofs::{
     circuit::{Layouter, SimpleFloorPlanner, Value},
-    halo2curves::{
-        bn256::{Bn256, Fr},
-        ff::PrimeField,
-    },
     plonk::{
         create_proof, keygen_pk, keygen_vk, prepare, Circuit, ConstraintSystem, Error, ProvingKey,
         VerifyingKey,
@@ -82,8 +80,8 @@ fn criterion_benchmark(c: &mut Criterion) {
     fn key_and_circuit_gen(
         input_len: usize,
     ) -> (
-        ParamsKZG<Bn256>,
-        ProvingKey<Fr, KZGCommitmentScheme<Bn256>>,
+        ParamsKZG<Bls12>,
+        ProvingKey<Fr, KZGCommitmentScheme<Bls12>>,
         Sha3PreimageCircuit<Fr>,
     ) {
         let mut rng = ChaCha8Rng::from_entropy();
@@ -93,7 +91,7 @@ fn criterion_benchmark(c: &mut Criterion) {
         let params_path = Path::new(&path);
         if File::open(params_path).is_err() {
             let min_k = PackedChip::<Fr>::min_k(input_len);
-            let params = ParamsKZG::<Bn256>::unsafe_setup(min_k, &mut rng);
+            let params = ParamsKZG::<Bls12>::unsafe_setup(min_k, &mut rng);
             let mut buf = Vec::new();
 
             params
@@ -106,7 +104,7 @@ fn criterion_benchmark(c: &mut Criterion) {
 
         // Setup
         let params = File::open(params_path).expect("couldn't load params");
-        let params: ParamsKZG<Bn256> =
+        let params: ParamsKZG<Bls12> =
             ParamsKZG::read_custom::<_>(&mut BufReader::new(params), SerdeFormat::Processed)
                 .expect("Failed to read params");
 
@@ -125,13 +123,13 @@ fn criterion_benchmark(c: &mut Criterion) {
 
     fn prover(
         circuit: Sha3PreimageCircuit<Fr>,
-        params: &ParamsKZG<Bn256>,
-        pk: &ProvingKey<Fr, KZGCommitmentScheme<Bn256>>,
+        params: &ParamsKZG<Bls12>,
+        pk: &ProvingKey<Fr, KZGCommitmentScheme<Bls12>>,
     ) -> Vec<u8> {
         let rng = ChaCha8Rng::from_entropy();
 
         let mut transcript = CircuitTranscript::init();
-        create_proof::<Fr, KZGCommitmentScheme<Bn256>, CircuitTranscript<blake2b_simd::State>, _>(
+        create_proof::<Fr, KZGCommitmentScheme<Bls12>, CircuitTranscript<blake2b_simd::State>, _>(
             params,
             pk,
             &[circuit.clone()],
@@ -145,13 +143,13 @@ fn criterion_benchmark(c: &mut Criterion) {
     }
 
     fn verifier(
-        params: &ParamsKZG<Bn256>,
-        vk: &VerifyingKey<Fr, KZGCommitmentScheme<Bn256>>,
+        params: &ParamsKZG<Bls12>,
+        vk: &VerifyingKey<Fr, KZGCommitmentScheme<Bls12>>,
         proof: &[u8],
     ) {
         let mut transcript = CircuitTranscript::init_from_bytes(proof);
         let res =
-            prepare::<Fr, KZGCommitmentScheme<Bn256>, CircuitTranscript<blake2b_simd::State>>(
+            prepare::<Fr, KZGCommitmentScheme<Bls12>, CircuitTranscript<blake2b_simd::State>>(
                 vk,
                 &[],
                 &[&[]],

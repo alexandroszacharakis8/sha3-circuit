@@ -1,9 +1,9 @@
 //! Module to assign values for bootstraping  spread bits of the form
 //! w = a_1b_1c_1 a_2b_2c_2 ..... a_mb_mc_m
 
+use ff::PrimeField;
 use midnight_proofs::{
     circuit::{Chip, Region, Value},
-    halo2curves::ff::PrimeField,
     plonk::Error,
 };
 

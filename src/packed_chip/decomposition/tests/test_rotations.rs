@@ -1,9 +1,10 @@
 use std::marker::PhantomData;
 
+use ff::{Field, PrimeField};
+use midnight_curves::Fq as Fp;
 use midnight_proofs::{
     circuit::{Chip, Layouter, SimpleFloorPlanner, Value},
     dev::MockProver,
-    halo2curves::{ff::PrimeField, pasta::Fp},
     plonk::{Circuit, ConstraintSystem, Error},
 };
 use rand::{Rng, RngCore, SeedableRng};
@@ -167,7 +168,7 @@ fn test_rotations() {
 
             // get the computed and expected values
             let computed_v =
-                constants.iter().zip(limbs.clone()).fold(Fp::zero(), |acc, (c, l)| acc + c * l);
+                constants.iter().zip(limbs.clone()).fold(Fp::ZERO, |acc, (c, l)| acc + c * l);
             // get the expected value
             let expected_v = Fp::from(v);
 
@@ -175,7 +176,7 @@ fn test_rotations() {
 
             // get the computed and expected values for the rotation
             let computed_rot =
-                rot_constants.into_iter().zip(limbs).fold(Fp::zero(), |acc, (c, l)| acc + c * l);
+                rot_constants.into_iter().zip(limbs).fold(Fp::ZERO, |acc, (c, l)| acc + c * l);
             // get the expected value
             let expected_rot = Fp::from(rotated_v);
 

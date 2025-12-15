@@ -1,7 +1,8 @@
 //! Types and operation that are usefull for computing in-circuit the Keccak-f
 //! permutation
 
-use midnight_proofs::{circuit::Value, halo2curves::ff::PrimeField};
+use ff::PrimeField;
+use midnight_proofs::circuit::Value;
 
 use crate::{
     constants::{KECCAK_ABSORB_LANES, KECCAK_NUM_LANES, KECCAK_WIDTH},

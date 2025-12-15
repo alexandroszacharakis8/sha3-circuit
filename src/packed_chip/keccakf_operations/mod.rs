@@ -1,4 +1,5 @@
-use midnight_proofs::{circuit::Region, halo2curves::ff::PrimeField, plonk::Error};
+use ff::PrimeField;
+use midnight_proofs::{circuit::Region, plonk::Error};
 
 use self::types::AssignedKeccakState;
 use super::{utils::AssignedSpreadBits, PackedChip};

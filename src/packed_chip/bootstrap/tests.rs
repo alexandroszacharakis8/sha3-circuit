@@ -1,5 +1,7 @@
 use std::marker::PhantomData;
 
+use ff::{Field, PrimeField};
+use midnight_curves::Fq as Fp;
 use midnight_proofs::{
     circuit::{Layouter, SimpleFloorPlanner, Value},
     dev::MockProver,
@@ -13,13 +15,7 @@ use crate::packed_chip::{
 };
 
 mod test_bootstrap_gate {
-    use midnight_proofs::{
-        circuit::Chip,
-        halo2curves::{
-            ff::{Field, PrimeField},
-            pasta::Fp,
-        },
-    };
+    use midnight_proofs::circuit::Chip;
     use rand::Rng;
 
     use super::*;
@@ -216,7 +212,8 @@ mod test_bootstrap_gate {
 
 mod test_bootstrap_assignment {
 
-    use midnight_proofs::halo2curves::{ff::PrimeField, pasta::Fp};
+    use ff::PrimeField;
+    use midnight_curves::Fq as Fp;
 
     use super::*;
 

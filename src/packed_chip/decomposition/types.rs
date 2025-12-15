@@ -1,6 +1,6 @@
 //! Types for decomposing bits in dense and spread forms
 
-use midnight_proofs::halo2curves::ff::PrimeField;
+use ff::PrimeField;
 
 use super::rotation::{lane_limbs, limb_sizes};
 use crate::{
@@ -102,8 +102,8 @@ pub(crate) struct AssignedDecomposedSpread<F: PrimeField> {
 
 #[cfg(test)]
 mod tests {
-
-    use midnight_proofs::halo2curves::pasta::Fp;
+    use ff::Field;
+    use midnight_curves::Fq as Fp;
     use rand::{RngCore, SeedableRng};
     use rand_chacha::ChaCha8Rng;
 
@@ -146,7 +146,7 @@ mod tests {
                     .iter()
                     .map(|limb| limb.to_field::<Fp>())
                     .zip(get_dense_limb_coefficients::<Fp>(rot, false).iter())
-                    .fold(Fp::zero(), |acc, (l, c)| acc + l * c);
+                    .fold(Fp::ZERO, |acc, (l, c)| acc + l * c);
                 assert_eq!(result_dense, expected_dense);
 
                 // same for the spread limbs
@@ -158,7 +158,7 @@ mod tests {
                     .iter()
                     .map(|limb| limb.to_field::<Fp>())
                     .zip(get_spread_limb_coefficients::<Fp>(rot, false).iter())
-                    .fold(Fp::zero(), |acc, (l, c)| acc + l * c);
+                    .fold(Fp::ZERO, |acc, (l, c)| acc + l * c);
                 assert_eq!(result_spread, expected_spread);
             }
         });
