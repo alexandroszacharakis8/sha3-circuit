@@ -10,10 +10,10 @@ categories = ["cryptography"]
 keywords = ["halo", "proofs", "zkp", "zkSNARKs", "sha3", "keccak"]
 
 [dependencies]
-midnight-curves = { git = "https://github.com/midnightntwrk/midnight-zk.git", tag = "midnight-curves-v0.2.0" }
-midnight-proofs = { git = "https://github.com/midnightntwrk/midnight-zk.git", tag = "midnight-proofs-v0.6.0", default-features = false, features = [
-  "circuit-params",
-  "committed-instances",
+midnight-curves = "0.2.0"
+midnight-proofs = { version = "0.7.0", default-features = false, features = [
+    "circuit-params",
+    "committed-instances",
 ] }
 num-bigint = { version = "0.4" }
 rand = "0.8"
