@@ -422,7 +422,8 @@ checksum = "f52b00d39961fc5b2736ea853c9cc86238e165017a493d1d5c8eac6bdc4cc273"
 [[package]]
 name = "midnight-curves"
 version = "0.2.0"
-source = "git+https://github.com/midnightntwrk/midnight-zk.git?tag=midnight-curves-v0.2.0#160d581d3934bf30a60c0a0c0826987686fcaa89"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "71df41292a1fd7796bf6c0c6eff7ad717d628406a59a79240e68579716c3566a"
 dependencies = [
  "bitvec",
  "blst",
@@ -447,8 +448,9 @@ dependencies = [
 
 [[package]]
 name = "midnight-proofs"
-version = "0.6.0"
-source = "git+https://github.com/midnightntwrk/midnight-zk.git?tag=midnight-proofs-v0.6.0#008b67457a1ae7d3c19f20d11210eed20c8178d0"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c977f57dc14235eb02ea9579f6bee1996b0edd50efaa5ab7ad55cb87966c0d7d"
 dependencies = [
  "blake2b_simd",
  "ff",
