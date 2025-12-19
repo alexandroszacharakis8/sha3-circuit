@@ -7,7 +7,7 @@ description = "Lookup based midnight-proofs (halo2 fork) implementation of kecca
 readme = "README.md"
 license = "Apache-2.0"
 categories = ["cryptography"]
-keywords = ["halo", "proofs", "zkp", "zkSNARKs", "sha3", "keccak"]
+keywords = ["proofs", "zkp", "zkSNARKs", "sha3", "keccak"]
 
 [dependencies]
 midnight-curves = "0.2.0"
