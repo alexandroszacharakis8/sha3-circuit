@@ -6,9 +6,10 @@ use midnight_proofs::{
     plonk::Error,
 };
 
-use crate::{
-    constants::KECCAK_ABSORB_BYTES, instructions::Keccackf1600Instructions, packed_chip::PackedChip,
-};
+use crate::{constants::KECCAK_ABSORB_BYTES, instructions::Keccackf1600Instructions};
+
+#[cfg(not(doctest))]
+use crate::packed_chip::PackedChip;
 
 #[derive(Debug, Clone, Copy)]
 /// Enum that represents the two supported hash modes. These are:
@@ -283,6 +284,7 @@ where
 
 // The load function only needs to be defined for either Keccak or Sha, since
 // they share the same tables.
+#[cfg(not(doctest))]
 impl<F: PrimeField> Keccak256<F, PackedChip<F>> {
     /// Loads the tables of the underlying packed chip.
     pub fn load_table(&self, layouter: &mut impl Layouter<F>) -> Result<(), Error> {
