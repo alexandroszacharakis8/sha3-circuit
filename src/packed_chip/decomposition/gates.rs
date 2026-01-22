@@ -24,36 +24,35 @@ pub(super) fn configure_decomposition_lookup<F: PrimeField>(
     t_spread: TableColumn,
 ) {
     // enable lookups for full size limbs
-    meta.lookup("decomposition lookup limbs", |meta| {
+    meta.lookup("decomposition lookup limbs", Some(q_spread), |meta| {
         // we use no tag here, we allow looking the whole table
-        let q = meta.query_selector(q_spread);
-        let limb = dc_advice_cols.iter().take(NUM_FULL_LIMBS).map(|limb| q.clone() * meta.query_advice(*limb, Rotation::cur())).collect::<Vec<_>>();
+        let limb = dc_advice_cols.iter().take(NUM_FULL_LIMBS).map(|limb| meta.query_advice(*limb, Rotation::cur())).collect::<Vec<_>>();
         vec![(limb, t_spread)]
     });
     // enable lookup for lo limbs
     meta.lookup(
         "decomposition lookup lo limb",
+        Some(q_spread),
         |meta| {
-            let q = meta.query_selector(q_spread);
             // the tag in this case is fixed and equal to LAST_FIXED_LIMB_LENGTH. If it is a
             // full limb allow searching the whole table
             let lo_limb = meta.query_advice(dc_advice_cols[NUM_LIMBS - 3], Rotation::cur());
             if LAST_FIXED_LIMB_LENGTH == MAX_BIT_LENGTH {
-                vec![(vec![q * lo_limb], t_spread)]
+                vec![(vec![lo_limb], t_spread)]
             } else {
                 let tag = Expression::Constant(F::from(LAST_FIXED_LIMB_LENGTH as u64));
-                vec![(vec![q.clone() * tag], t_tag), (vec![q * lo_limb], t_spread)]
+                vec![(vec![tag], t_tag), (vec![lo_limb], t_spread)]
             }
         },
     );
     meta.lookup(
         "decomposition lookup hi limbs",
+        Some(q_spread),
         |meta| {
-            let q = meta.query_selector(q_spread);
             // the tag is explicit and depends on the rotation
-            let tag_small = tag_cols.iter().take(2).map(|tag| q.clone() * meta.query_fixed(*tag, Rotation::cur())).collect::<Vec<_>>();
+            let tag_small = tag_cols.iter().take(2).map(|tag| meta.query_fixed(*tag, Rotation::cur())).collect::<Vec<_>>();
             let small_limb =
-                dc_advice_cols[NUM_LIMBS - 2..].iter().take(2).map(|limb| q.clone() * meta.query_advice(*limb, Rotation::cur())).collect::<Vec<_>>();
+                dc_advice_cols[NUM_LIMBS - 2..].iter().take(2).map(|limb| meta.query_advice(*limb, Rotation::cur())).collect::<Vec<_>>();
             vec![(tag_small, t_tag), (small_limb, t_spread)]
         },
     );
