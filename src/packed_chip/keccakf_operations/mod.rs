@@ -46,7 +46,7 @@ const ROWS_PER_ROUND: usize = COMPUTE_CHI_OFFSET_END;
 const LAST_IOTA_OFFSET: usize = KECCAK_NUM_ROUNDS * ROWS_PER_ROUND;
 
 /// the total rows needed for the permutation
-pub(super) const KECCAK_ROWS_PER_PERMUTATION: usize = LAST_IOTA_OFFSET + 1;
+pub(super) const KECCAK_ROWS_PER_PERMUTATION: usize = LAST_IOTA_OFFSET + 2;
 
 impl<F: PrimeField> PackedChip<F> {
     /// given as input an assigned initial keccak state, it computes the state

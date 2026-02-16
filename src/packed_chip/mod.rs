@@ -647,7 +647,7 @@ impl<F: PrimeField> Keccackf1600Instructions<F> for PackedChip<F> {
         // the number of rows is
         // - 4 rows per absorbed lane to absorb the input lanes
         //   (4*17*num_absorbed_blocks)
-        // - 4105 for each permutation (4105 * num_absorbed_blocks)
+        // - KECCAK_ROWS_PER_PERMUTATION for each permutation (4105 * num_absorbed_blocks)
         // - 4 rows per squeezed lane (16)
         let nr_rows_log_f = num_absorbed_blocks
             * (KECCAK_ROWS_PER_PERMUTATION + 4 * KECCAK_ABSORB_LANES)
