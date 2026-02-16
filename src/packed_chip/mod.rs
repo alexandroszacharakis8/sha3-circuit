@@ -346,6 +346,9 @@ impl<F: PrimeField> Chip<F> for PackedChip<F> {
 impl<F: PrimeField> PackedChip<F> {
     /// Creates a chip given the config
     pub fn new(config: &PackedConfig) -> Self {
+        // Assert field size is at least 192 bits
+        assert!(F::NUM_BITS > 192);
+         
         Self {
             config: config.clone(),
             _marker: PhantomData,
@@ -647,7 +650,7 @@ impl<F: PrimeField> Keccackf1600Instructions<F> for PackedChip<F> {
         // the number of rows is
         // - 4 rows per absorbed lane to absorb the input lanes
         //   (4*17*num_absorbed_blocks)
-        // - 4105 for each permutation (4105 * num_absorbed_blocks)
+        // - KECCAK_ROWS_PER_PERMUTATION for each permutation (KECCAK_ROWS_PER_PERMUTATION * num_absorbed_blocks)
         // - 4 rows per squeezed lane (16)
         let nr_rows_log_f = num_absorbed_blocks
             * (KECCAK_ROWS_PER_PERMUTATION + 4 * KECCAK_ABSORB_LANES)
