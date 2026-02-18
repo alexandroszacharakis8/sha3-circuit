@@ -33,28 +33,31 @@ impl BytesToSpreadSubconfig {
     /// spread form of 2^24 ~a7 + 2^16 ~a6 + 2^8 ~a5 + ~a4
     pub(super) fn configure_bytes_to_spread<F: PrimeField>(&self, meta: &mut ConstraintSystem<F>) {
         // configure the 4 lookups
-            meta.lookup("spread byte lookup table", Some(self.q_bytes_to_lane), |meta| {
+        (0..4).for_each(|i| {
+            meta.lookup(format!("spread byte lookup: limb {}", i), None, |meta| {
+                let q = meta.query_selector(self.q_bytes_to_lane);
                 // the dense value is on the current row
-                let dense = self.limbs.iter().map(|limb|meta.query_advice(*limb, Rotation::cur())).collect::<Vec<_>>();
+                let dense = meta.query_advice(self.limbs[i], Rotation::cur());
                 // the spread value is on the next row
-                let spread = self.limbs.iter().map(|limb| meta.query_advice(*limb, Rotation::next())).collect::<Vec<_>>();
+                let spread = meta.query_advice(self.limbs[i], Rotation::next());
 
                 // in case we have an 8-bit lookup ignore the tag and look in the whole table
                 if MAX_BIT_LENGTH == 8 {
                     vec![
-                        (dense, self.t_dense),
-                        (spread, self.t_spread),
+                        (q.clone() * dense, self.t_dense),
+                        (q * spread, self.t_spread),
                     ]
                 } else {
                     // use tag=8 for looking up byte values
                     let tag = Expression::Constant(F::from(8));
                     vec![
-                        (vec![tag; self.limbs.len()], self.t_tag),
-                        (dense, self.t_dense),
-                        (spread, self.t_spread),
+                        (q.clone() * tag, self.t_tag),
+                        (q.clone() * dense, self.t_dense),
+                        (q * spread, self.t_spread),
                     ]
                 }
             });
+        });
 
         // configure the recomposition constraint:
         // res(omegaX) = 8^32 intermediate(omegaX) +
