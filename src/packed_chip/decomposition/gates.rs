@@ -24,18 +24,14 @@ pub(super) fn configure_decomposition_lookup<F: PrimeField>(
     t_spread: TableColumn,
 ) {
     // enable lookups for full size limbs
-    for (i, adv_col) in dc_advice_cols.iter().take(NUM_FULL_LIMBS).enumerate() {
-        meta.lookup(format!("decomposition lookup: limb {}", i), None, |meta| {
-            // we use no tag here, we allow looking the whole table
-            let q = meta.query_selector(q_spread);
-            let limb = meta.query_advice(*adv_col, Rotation::cur());
-            vec![(q * limb, t_spread)]
+        meta.batched_lookup(format!("decomposition lookup"), Some(q_spread), |meta| {
+            let limbs = dc_advice_cols.iter().take(NUM_FULL_LIMBS).map(|adv_col| meta.query_advice(*adv_col, Rotation::cur())).collect();
+            vec![(limbs, t_spread)]
         });
-    }
     // enable lookup for lo limbs
     meta.lookup(
         format!("decomposition lookup: limb {}", NUM_FULL_LIMBS),
-        None,
+        Some(q_spread),
         |meta| {
             let q = meta.query_selector(q_spread);
             // the tag in this case is fixed and equal to LAST_FIXED_LIMB_LENGTH. If it is a
@@ -45,24 +41,21 @@ pub(super) fn configure_decomposition_lookup<F: PrimeField>(
                 vec![(q * lo_limb, t_spread)]
             } else {
                 let tag = Expression::Constant(F::from(LAST_FIXED_LIMB_LENGTH as u64));
-                vec![(q.clone() * tag, t_tag), (q * lo_limb, t_spread)]
+                vec![(tag, t_tag), (lo_limb, t_spread)]
             }
         },
     );
-    (0..=1).for_each(|i| {
-        meta.lookup(
-            format!("decomposition lookup: limb {}", NUM_FULL_LIMBS + 1 + i),
-            None,
+        meta.batched_lookup(
+            "decomposition lookup",
+            Some(q_spread),
             |meta| {
-                let q = meta.query_selector(q_spread);
                 // the tag is explicit and depends on the rotation
-                let tag_small = meta.query_fixed(tag_cols[i], Rotation::cur());
-                let small_limb =
-                    meta.query_advice(dc_advice_cols[NUM_LIMBS - 2 + i], Rotation::cur());
-                vec![(q.clone() * tag_small, t_tag), (q * small_limb, t_spread)]
+                let tags_small = (0..=1).map(|i| meta.query_fixed(tag_cols[i], Rotation::cur())).collect();
+                let small_limbs =
+                    (0..=1).map(|i| meta.query_advice(dc_advice_cols[NUM_LIMBS - 2 + i], Rotation::cur())).collect();
+                vec![(tags_small, t_tag), (small_limbs, t_spread)]
             },
         );
-    });
 }
 
 /// Configures a gate to perform linear combination

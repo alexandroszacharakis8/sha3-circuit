@@ -33,30 +33,27 @@ impl BytesToSpreadSubconfig {
     /// spread form of 2^24 ~a7 + 2^16 ~a6 + 2^8 ~a5 + ~a4
     pub(super) fn configure_bytes_to_spread<F: PrimeField>(&self, meta: &mut ConstraintSystem<F>) {
         // configure the 4 lookups
-        (0..4).for_each(|i| {
-            meta.lookup(format!("spread byte lookup: limb {}", i), None, |meta| {
-                let q = meta.query_selector(self.q_bytes_to_lane);
+            meta.batched_lookup(format!("spread byte lookup"), Some(self.q_bytes_to_lane), |meta| {
                 // the dense value is on the current row
-                let dense = meta.query_advice(self.limbs[i], Rotation::cur());
+                let dense = (0..4).map(|i| meta.query_advice(self.limbs[i], Rotation::cur())).collect::<Vec<_>>();
                 // the spread value is on the next row
-                let spread = meta.query_advice(self.limbs[i], Rotation::next());
+                let spread = (0..4).map(|i| meta.query_advice(self.limbs[i], Rotation::next())).collect::<Vec<_>>();
 
                 // in case we have an 8-bit lookup ignore the tag and look in the whole table
                 if MAX_BIT_LENGTH == 8 {
                     vec![
-                        (q.clone() * dense, self.t_dense),
-                        (q * spread, self.t_spread),
+                        (dense, self.t_dense),
+                        (spread, self.t_spread),
                     ]
                 } else {
                     // use tag=8 for looking up byte values
                     let tag = Expression::Constant(F::from(8));
                     vec![
-                        (q.clone() * tag, self.t_tag),
-                        (q.clone() * dense, self.t_dense),
-                        (q * spread, self.t_spread),
+                        (vec![tag; 4], self.t_tag),
+                        (dense, self.t_dense),
+                        (spread, self.t_spread),
                     ]
                 }
-            });
         });
 
         // configure the recomposition constraint:
