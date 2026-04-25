@@ -25,7 +25,7 @@ pub(super) fn configure_decomposition_lookup<F: PrimeField>(
 ) {
     // enable lookups for full size limbs
     for (i, adv_col) in dc_advice_cols.iter().take(NUM_FULL_LIMBS).enumerate() {
-        meta.lookup(format!("decomposition lookup: limb {}", i), |meta| {
+        meta.lookup(format!("decomposition lookup: limb {}", i), None, |meta| {
             // we use no tag here, we allow looking the whole table
             let q = meta.query_selector(q_spread);
             let limb = meta.query_advice(*adv_col, Rotation::cur());
@@ -35,6 +35,7 @@ pub(super) fn configure_decomposition_lookup<F: PrimeField>(
     // enable lookup for lo limbs
     meta.lookup(
         format!("decomposition lookup: limb {}", NUM_FULL_LIMBS),
+        None,
         |meta| {
             let q = meta.query_selector(q_spread);
             // the tag in this case is fixed and equal to LAST_FIXED_LIMB_LENGTH. If it is a
@@ -51,6 +52,7 @@ pub(super) fn configure_decomposition_lookup<F: PrimeField>(
     (0..=1).for_each(|i| {
         meta.lookup(
             format!("decomposition lookup: limb {}", NUM_FULL_LIMBS + 1 + i),
+            None,
             |meta| {
                 let q = meta.query_selector(q_spread);
                 // the tag is explicit and depends on the rotation

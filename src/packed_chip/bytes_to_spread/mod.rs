@@ -34,7 +34,7 @@ impl BytesToSpreadSubconfig {
     pub(super) fn configure_bytes_to_spread<F: PrimeField>(&self, meta: &mut ConstraintSystem<F>) {
         // configure the 4 lookups
         (0..4).for_each(|i| {
-            meta.lookup(format!("spread byte lookup: limb {}", i), |meta| {
+            meta.lookup(format!("spread byte lookup: limb {}", i), None, |meta| {
                 let q = meta.query_selector(self.q_bytes_to_lane);
                 // the dense value is on the current row
                 let dense = meta.query_advice(self.limbs[i], Rotation::cur());
