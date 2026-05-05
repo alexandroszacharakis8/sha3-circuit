@@ -29,3 +29,7 @@ sha3 = "0.10.0"
 name = "sha3_preimage"
 harness = false
 
+[patch.crates-io]
+midnight-curves = { git = "https://github.com/midnightntwrk/midnight-zk", branch = "main" }
+midnight-proofs = { git = "https://github.com/midnightntwrk/midnight-zk", branch = "main" }
+
