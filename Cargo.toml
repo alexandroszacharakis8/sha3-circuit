@@ -10,8 +10,8 @@ categories = ["cryptography"]
 keywords = ["proofs", "zkp", "zkSNARKs", "sha3", "keccak"]
 
 [dependencies]
-midnight-curves = "0.2.0"
-midnight-proofs = { git = "https://github.com/midnightntwrk/midnight-zk", branch = "main", default-features = false, features = [
+midnight-curves = "0.4.0-rc.1"
+midnight-proofs = { version = "0.9.0-rc.1", default-features = false, features = [
     "circuit-params",
     "committed-instances",
 ] }
@@ -19,6 +19,10 @@ num-bigint = { version = "0.4" }
 rand = "0.8"
 blake2b_simd = "1.0.3"
 ff = "0.13"
+
+[patch.crates-io]
+midnight-curves = { git = "https://github.com/midnightntwrk/midnight-zk", rev = "dbba455b" }
+midnight-proofs = { git = "https://github.com/midnightntwrk/midnight-zk", rev = "dbba455b" }
 
 [dev-dependencies]
 criterion = "0.3"
